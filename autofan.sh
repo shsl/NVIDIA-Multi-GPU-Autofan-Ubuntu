@@ -20,7 +20,7 @@ MIN_TEMP=45          # Set Min Temperature Target / порог минималь�
 MAX_TEMP=68          # Set Max Temperature Target / порог максимальной температуры
 MIN_FAN_SPEED=50     # Set Min Fan Speed applied below MIN_TEMP / Минимальная скорость вентиляторов, применяется при температуре ниже MIN_TEMP
 MAX_FAN_SPEED=90     # Set Min Fan Speed applied above  MAX_TEMP / Максимальная скорость вентиляторов, применяется при температуре выше MAX_TEMP
-
+ALLINONESTRING=''    # Change all speed at once   
 # BEGIN
 
 if [[ $MAX_FAN_SPEED > 100 ]]; then
@@ -35,12 +35,11 @@ fi
 
 CARDS_NUM=`nvidia-smi -L | wc -l`
 echo "[$(date +"%d/%m/%y %T")] Found ${CARDS_NUM} GPU(s) : MIN ${MIN_TEMP}°C - ${MAX_TEMP}°C MAX : Delay ${DELAY}s"
-echo "[$(date +"%d/%m/%y %T")] Found ${CARDS_NUM} GPU(s) : MIN ${MIN_TEMP}°C - ${MAX_TEMP}°C MAX" >> /var/log/autofan.log
-
+echo "[$(date +"%d/%m/%y %T")] Found ${CARDS_NUM} GPU(s) : MIN ${MIN_TEMP}°C - ${MAX_TEMP}°C MAX"
 #while true # this while-do-done cycle is disabled for single-run from cron, to be setup in cron
 #do         # цикл while-do отключен для однократного запуска скрипта из cron
 #echo "$(date +"%d/%m/%y %T")"
-#echo "$(date +"%d/%m/%y %T")" >> /var/log/autofan.log
+#echo "$(date +"%d/%m/%y %T")"
 
 for ((i=0; i<$CARDS_NUM; i++))
 do
@@ -59,10 +58,12 @@ fi
 result=`nvidia-settings -a [gpu:$i]/GPUFanControlState=1 | grep "assigned value 1"`
 test -z "$result" && echo "GPU${i} ${GPU_TEMP}°C -> Fan speed management is not supported" && exit 1
 #nvidia-settings -a [gpu:$i]/GPUFanControlState=1 | grep -v "^$" > /dev/null
-nvidia-settings -a [fan:$i]/GPUTargetFanSpeed=$FAN_SPEED > /dev/null
+ALLINONESTRING+=" -a [fan:$i]/GPUTargetFanSpeed=$FAN_SPEED"
 echo "GPU${i} ${GPU_TEMP}°C -> ${FAN_SPEED}%"
-echo "GPU${i} ${GPU_TEMP}°C -> ${FAN_SPEED}%" >> /var/log/autofan.log
+echo "GPU${i} ${GPU_TEMP}°C -> ${FAN_SPEED}%"
 done
+
+nvidia-settings ${ALLINONESTRING} > /dev/null
 
 #sleep $DELAY
 #done
