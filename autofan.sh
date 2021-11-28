@@ -9,7 +9,7 @@ MAX_TEMP=68          # Set Max Temperature Target / порог максимал�
 MIN_FAN_SPEED=50     # Set Min Fan Speed applied below MIN_TEMP / Минимальная скорость вентиляторов, применяется при температуре ниже MIN_TEMP
 MAX_FAN_SPEED=90     # Set Min Fan Speed applied above  MAX_TEMP / Максимальная скорость вентиляторов, применяется при температуре выше MAX_TEMP
 ALLINONESTRING=''    # Change all speed at once
-k=0;
+
 # BEGIN
 
 if [[ $MAX_FAN_SPEED > 100 ]]; then
