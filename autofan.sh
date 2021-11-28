@@ -58,7 +58,8 @@ fi
 result=`nvidia-settings -a [gpu:$i]/GPUFanControlState=1 | grep "assigned value 1"`
 test -z "$result" && echo "GPU${i} ${GPU_TEMP}°C -> Fan speed management is not supported" && exit 1
 #nvidia-settings -a [gpu:$i]/GPUFanControlState=1 | grep -v "^$" > /dev/null
-ALLINONESTRING+=" -a [fan:$i]/GPUTargetFanSpeed=$FAN_SPEED"
+ALLINONESTRING+=" -a [fan:$i]/GPUTargetFanSpeed=$FAN_SPEED -a [fan:$i+1]/GPUTargetFanSpeed=$FAN_SPEED"
+i++
 echo "GPU${i} ${GPU_TEMP}°C -> ${FAN_SPEED}%"
 echo "GPU${i} ${GPU_TEMP}°C -> ${FAN_SPEED}%"
 done
