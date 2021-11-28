@@ -13,13 +13,7 @@ ALLINONESTRING=''    # Change all speed at once
 # BEGIN
 
 if [[ $MAX_FAN_SPEED > 100 ]]; then
-    MAX_FAN_SPEED=100
-fi
-
-n=`gpu-detect NVIDIA`
-if [ $n == 0 ]; then
-    echo "[$(date +"%d/%m/%y %T")] No NVIDIA cards detected, exiting"
-    exit
+    MAX_FAN_SPEED=90
 fi
 
 CARDS_NUM=`nvidia-smi -L | wc -l`
