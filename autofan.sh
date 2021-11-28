@@ -21,23 +21,21 @@ echo "[$(date +"%d/%m/%y %T")] Found ${CARDS_NUM} GPU(s) : MIN ${MIN_TEMP}°C - 
 
 for ((i=0; i<$CARDS_NUM; i++))
 do
-GPU_TEMP=`nvidia-smi -i $i --query-gpu=temperature.gpu --format=csv,noheader`
-if [[ $GPU_TEMP < $MIN_TEMP ]]
-then
-FAN_SPEED=$MIN_FAN_SPEED
-elif [[ $GPU_TEMP > $MAX_TEMP ]]
-then
-FAN_SPEED=$MAX_FAN_SPEED
-else
-FAN_DIFF=$(($MAX_FAN_SPEED-$MIN_FAN_SPEED))
-FAN_SPEED_ADDED=$(( ($GPU_TEMP - $MIN_TEMP)*$FAN_DIFF/($MAX_TEMP - $MIN_TEMP) ))
-FAN_SPEED=$(($MIN_FAN_SPEED+$FAN_SPEED_ADDED))
-fi
-#firs fan
-ALLINONESTRING+=" -a [gpu:$i]/GPUFanControlState=1 -a [fan:$((i*2))]/GPUTargetFanSpeed=$FAN_SPEED"
-#second fan
-ALLINONESTRING+=" -a [fan:$((i*2+1))]/GPUTargetFanSpeed=$FAN_SPEED"
-echo "GPU${i} ${GPU_TEMP}°C -> ${FAN_SPEED}%"
+    GPU_TEMP=`nvidia-smi -i $i --query-gpu=temperature.gpu --format=csv,noheader`
+    if [[ $GPU_TEMP < $MIN_TEMP ]]
+    then
+        FAN_SPEED=$MIN_FAN_SPEED
+    elif [[ $GPU_TEMP > $MAX_TEMP ]]
+    then
+        FAN_SPEED=$MAX_FAN_SPEED
+    else
+        FAN_DIFF=$(($MAX_FAN_SPEED-$MIN_FAN_SPEED))
+        FAN_SPEED_ADDED=$(( ($GPU_TEMP - $MIN_TEMP)*$FAN_DIFF/($MAX_TEMP - $MIN_TEMP) ))
+        FAN_SPEED=$(($MIN_FAN_SPEED+$FAN_SPEED_ADDED))
+    fi
+    #fan
+    ALLINONESTRING+=" -a [gpu:$i]/GPUFanControlState=1 -a [fan:$((i*2))]/GPUTargetFanSpeed=$FAN_SPEED -a [fan:$((i*2+1))]/GPUTargetFanSpeed=$FAN_SPEED"
+    echo "GPU${i} ${GPU_TEMP}°C -> ${FAN_SPEED}%"
 done
 
 nvidia-settings ${ALLINONESTRING}
